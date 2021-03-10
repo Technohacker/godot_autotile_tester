@@ -10,7 +10,7 @@ func _init(editor):
 
 func can_handle(object):
 	if object is TileSet:
-		tileset = object
+		tileset = object.duplicate()
 		return true
 	else:
 		return false
@@ -40,13 +40,18 @@ func add_autotile_pattern():
 	var tilemap = test_scene.get_node("TileMap") as TileMap
 
 	tilemap.tile_set = tileset
-	tilemap.cell_size = tileset.autotile_get_size(0)
 	tilemap.clear()
+
+	var size_set = false
 
 	var y_offset = 0
 	for tile_id in tileset.get_tiles_ids():
 		if tileset.tile_get_tile_mode(tile_id) == TileSet.AUTO_TILE:
 			# Autotile
+			if !size_set:
+				tilemap.cell_size = tileset.autotile_get_size(0)
+				size_set = true
+
 			for x in PATTERN.size():
 				for y in PATTERN[x]:
 					tilemap.set_cell(x, y + y_offset, tile_id)
